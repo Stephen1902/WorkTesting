@@ -12,10 +12,10 @@ enum class ETasks : uint8
 {
 	ETA_Sleep		UMETA(DisplayName="Sleeping"),
 	ETA_GetUp		UMETA(DisplayName="Get Up"),
-	ETA_TravelWork	UMETA(DisplayName="Travel To Work"),
-	ETA_TravelHome	UMETA(DisplayName="Travel Home"),
+	ETA_Travel		UMETA(DisplayName="Travelling"),
 	ETA_Work		UMETA(DisplayName="Work"),
 	ETA_School		UMETA(DisplayName="School"),
+	ETA_EndDay		UMETA(DisplayName="End Work/School"),
 	ETA_Eat			UMETA(DisplayName="Eat"),
 	ETA_Relax		UMETA(DisplayName="Relax"),
 	ETA_Settle		UMETA(DisplayName="Settle Down"),
@@ -51,6 +51,12 @@ protected:
 	// Whether this person is using the building for its purpose even if they "work" there ie a waiter buying food
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Timetable")
 	bool bIsBuildingUser;
+
+	UPROPERTY(VisibleAnywhere, Category = "Timetable")
+	ETime WorkStartTime;
+
+	UPROPERTY(VisibleAnywhere, Category = "Timetable")
+	ETime WorkEndTime;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -68,4 +74,7 @@ private:
 	UPROPERTY()
 	ETasks CurrentTask;
 	bool bIsAtWork;
+	void SetWorkingHours();
+	int32 WorkingHoursPerDay;
+	
 };

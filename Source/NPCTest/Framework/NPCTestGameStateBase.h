@@ -7,7 +7,9 @@
 #include "GameFramework/GameStateBase.h"
 #include "NPCTestGameStateBase.generated.h"
 
-UENUM()
+class ANPCCharacter;
+
+UENUM(BlueprintType)
 enum class ETime : uint8
 {
 	ET_0000		UMETA(DisplayName="00:00"),
@@ -77,6 +79,9 @@ class NPCTEST_API ANPCTestGameStateBase : public AGameStateBase, public INPCInte
 public:
 	UPROPERTY()
 	FOnMinutesUpdated OnMinutesUpdated;
+
+	void AddNPCCharacter(ANPCCharacter* CharacterIn);
+	void RemoveNPCCharacter(ANPCCharacter* CharacterIn);
 	
 protected:
 	virtual void Tick(float DeltaSeconds) override;
@@ -111,4 +116,6 @@ private:
 	void SetDate();
 
 	ETime BroadcastTimeChange();
+
+	TMap<ANPCCharacter*, bool> NPCsInWorldWithJobs;
 };

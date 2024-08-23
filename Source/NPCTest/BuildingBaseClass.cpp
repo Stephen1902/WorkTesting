@@ -33,6 +33,13 @@ void ABuildingBaseClass::AdjustCondition(const float AmountToAdjust)
 	Condition += AmountToAdjust;
 }
 
+void ABuildingBaseClass::GetOpeningTimes(ETime& OpeningTime, ETime& ClosingTime, int32& MaxWorkingHours) const
+{
+	OpeningTime = BuildingStruct.OpeningTime;
+	ClosingTime = BuildingStruct.ClosingTime;
+	MaxWorkingHours = BuildingStruct.MaxWorkingHours;
+}
+
 // Called when the game starts or when spawned
 void ABuildingBaseClass::BeginPlay()
 {

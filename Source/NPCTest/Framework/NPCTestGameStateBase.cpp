@@ -20,6 +20,22 @@ ANPCTestGameStateBase::ANPCTestGameStateBase()
 	DayTick = 0;	
 }
 
+void ANPCTestGameStateBase::AddNPCCharacter(ANPCCharacter* CharacterIn)
+{
+	if (!NPCsInWorldWithJobs.Contains(CharacterIn))
+	{
+		NPCsInWorldWithJobs.Add(CharacterIn, false);
+	}
+}
+
+void ANPCTestGameStateBase::RemoveNPCCharacter(ANPCCharacter* CharacterIn)
+{
+	if (NPCsInWorldWithJobs.Contains(CharacterIn))
+	{
+		NPCsInWorldWithJobs.Remove(CharacterIn);
+	}
+}
+
 void ANPCTestGameStateBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -27,6 +43,8 @@ void ANPCTestGameStateBase::Tick(float DeltaSeconds)
 	SetDayTickAndClockwork(DeltaSeconds);
 	SetClock();
 	SetDate();
+
+	GEngine->AddOnScreenDebugMessage(0, 0.f, FColor::Red, *FString::FromInt(NPCsInWorldWithJobs.Num()));
 }
 
 void ANPCTestGameStateBase::BeginPlay()
@@ -94,7 +112,7 @@ void ANPCTestGameStateBase::SetClock()
 	}
 
 	const FString TimeToDisplay = FString::FromInt(Hours) + ":" + FString::FromInt(Minutes) + ":" + FString::FromInt(Seconds);
-	GEngine->AddOnScreenDebugMessage(0, 0.f, FColor::Green, *TimeToDisplay);
+	//GEngine->AddOnScreenDebugMessage(0, 0.f, FColor::Green, *TimeToDisplay);
 }
 
 void ANPCTestGameStateBase::SetDate()
@@ -120,12 +138,12 @@ void ANPCTestGameStateBase::SetDate()
 	GameDate[2] = Year;
 	
 	const FString DateToDisplay = FString::FromInt(Day) + "/" + FString::FromInt(Month) + "/" + FString::FromInt(Year);
-	GEngine->AddOnScreenDebugMessage(1, 0.f, FColor::Red, *DateToDisplay);
+	//GEngine->AddOnScreenDebugMessage(1, 0.f, FColor::Red, *DateToDisplay);
 }
 
 ETime ANPCTestGameStateBase::BroadcastTimeChange()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Time is now %i:%i"), Hours, Minutes);
+	//UE_LOG(LogTemp, Warning, TEXT("Time is now %i:%i"), Hours, Minutes);
 	
 	switch (Minutes)
 	{
@@ -160,7 +178,7 @@ ETime ANPCTestGameStateBase::BroadcastTimeChange()
 		}
 	case 30:
 		{
-			if (Hours == 0) {	return ETime::ET_0030; }
+			if (Hours == 0) { return ETime::ET_0030; }
 			if (Hours == 1) { return ETime::ET_0130; }
 			if (Hours == 2) { return ETime::ET_0230; }
 			if (Hours == 3) { return ETime::ET_0330; }

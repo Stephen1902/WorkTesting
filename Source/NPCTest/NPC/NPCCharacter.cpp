@@ -3,6 +3,7 @@
 #include "NPCCharacter.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "NPCTest/BuildingBaseClass.h"
 
 // Sets default values
 ANPCCharacter::ANPCCharacter()
@@ -45,6 +46,8 @@ void ANPCCharacter::BeginPlay()
 	GameStateRef = Cast<ANPCTestGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
 	if (GameStateRef)
 	{
+		// Register this NPC with the Game State which will give the info to buildings for job vacancies
+		GameStateRef->AddNPCCharacter(this);
 		GameStateRef->OnMinutesUpdated.AddDynamic(this, &ANPCCharacter::TimeHasChanged);
 	}
 }
@@ -67,8 +70,17 @@ void ANPCCharacter::TimeHasChanged(ETime NewTimeIn)
 {
 	if (NPCTimetable.Contains(NewTimeIn))
 	{
-		// Check whether the current task is to travel to work
-		if (NPCTimetable[NewTimeIn] == ETasks::ETA_TravelWork)
+		// Check whether the current task is to travel to work or home, get the destination of where they're going
+		
+	}
+}
+
+void ANPCCharacter::SetWorkingHours()
+{
+	if (WorkLocation)
+	{
+		WorkLocation->GetOpeningTimes(WorkStartTime, WorkEndTime, WorkingHoursPerDay);
+		if (WorkStartTime == WorkEndTime)
 		{
 			
 		}

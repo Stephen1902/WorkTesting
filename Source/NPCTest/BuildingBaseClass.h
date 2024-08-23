@@ -7,7 +7,6 @@
 #include "Framework/NPCTestGameStateBase.h"
 #include "BuildingBaseClass.generated.h"
 
-
 UENUM(BlueprintType)
 enum EBuildingType
 {
@@ -30,21 +29,25 @@ struct FBuildingStruct
 	FName BuildingName;
 
 	// A short description of what this building is
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Struct")
 	FName BuildingDescription;
 	
 	// What type(s) of building this is
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Struct")
 	TArray<TEnumAsByte<EBuildingType>> BuildingTypes;
 
 	// "Opening" hour for this building 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
-	ETime OpeningTime;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Struct")
+    ETime OpeningTime;
 
 	// "Closing" hour for this building
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Struct")
 	ETime ClosingTime;
 
+	// Maximum number of hours a worker can be here for a day
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Struct")
+	int32 MaxWorkingHours;
+	
 	FBuildingStruct()
 	{
 		BuildingName = FName("Default Name");
@@ -52,7 +55,23 @@ struct FBuildingStruct
 		BuildingTypes.Add(EBT_House);
 		OpeningTime = ETime::ET_0000;
 		ClosingTime = ETime::ET_0000;
+		MaxWorkingHours = 8;
 	}
+};
+
+USTRUCT(BlueprintType)
+struct FWorkforceStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Workforce Struct")
+	class ANPCCharacter* NPCWhoWorksHere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Struct")
+	ETime StartTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Struct")
+	ETime EndTime;
 };
 
 UCLASS()
@@ -66,6 +85,7 @@ public:
 
 	void AdjustCondition(const float AmountToAdjust);
 	float GetCondition() const { return Condition; }
+	void GetOpeningTimes(ETime& OpeningTime, ETime& ClosingTime, int32& MaxWorkingHours) const;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -85,18 +105,24 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
 	FBuildingStruct BuildingStruct;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
+	TArray<FWorkforceStruct> WorkforceArray;
+
 	// The amount the condition of this building falls per day through normal wear and tear
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
 	float DegradationPerDay;
 
-	// Amount this building costs to use
+	// Amount this building costs to use if a bar or restaurant etc.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
 	float AmountToUse;
 
 	// Amount this building pays its workers
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
 	float AmountToPay;
-	
+
+	// Maximum number of people who can work here
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Set Up")
+	int32 MaxWorkers;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -117,5 +143,7 @@ private:
 	void SecondEntranceEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	bool CheckIfOverlappingWorksHere(AActor* OverlappingActor) const;
+
+	int32 CurrentWorkers = 0;
 };
 
